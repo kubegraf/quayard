@@ -74,8 +74,11 @@ function Hero() {
           </div>
         </div>
         <Reveal>
-          <div className="hero-shot">
-            <img src={asset("hero-topology.webp")} alt="Live infrastructure topology — all systems nominal, 99.98% 30-day uptime" loading="eager" />
+          <div className="hero-figure">
+            <div className="hero-shot">
+              <img src={asset("hero-topology.webp")} alt="Live infrastructure topology — all systems nominal, 99.98% 30-day uptime" loading="eager" />
+            </div>
+            <img className="mascot-float" src={asset("mascot.webp")} alt="Quayard — your AI SRE" />
           </div>
         </Reveal>
       </div>
@@ -200,6 +203,7 @@ function Platform() {
         <div className="kicker">The Platform</div>
         <h2>Reliability, <span className="grad">redefined.</span></h2>
         <p className="sub">Three autonomous capabilities that transform how your team handles production.</p>
+        <Reveal><div className="platform-shot"><img src={asset("platform-console.webp")} alt="Quayard developer console — modules, reasoning, and code in one workspace" loading="lazy" /></div></Reveal>
         <div className="tabs">
           {tabs.map((tb, i) => (
             <button key={tb.key} className={`tab ${i === active ? "active" : ""}`} onClick={() => setActive(i)}>{tb.key}</button>
