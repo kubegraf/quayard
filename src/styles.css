@@ -69,12 +69,12 @@ h1{font-family:var(--display);font-weight:700;font-size:clamp(42px,6vw,72px);lin
 .hero-shot{position:relative;border-radius:20px;overflow:hidden;background:linear-gradient(180deg,#fff,#f3f7fc);border:1px solid var(--line);box-shadow:var(--sh-lg)}
 .hero-shot img{width:100%;height:auto}
 .hero-figure{position:relative}
-.mascot-float{position:absolute;left:-26px;bottom:-26px;width:104px;height:auto;z-index:3;filter:drop-shadow(0 16px 26px rgba(30,20,70,.28));animation:bob 4.5s ease-in-out infinite}
+.mascot-float{position:absolute;left:-30px;top:-34px;width:98px;height:auto;z-index:3;filter:drop-shadow(0 14px 24px rgba(30,20,70,.26));animation:bob 4.5s ease-in-out infinite}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
 @media(prefers-reduced-motion:reduce){.mascot-float{animation:none}}
 .platform-shot{border-radius:20px;overflow:hidden;border:1px solid var(--line);background:linear-gradient(180deg,#fff,#f7f4ff);box-shadow:var(--sh-lg);max-width:780px;margin:0 auto 52px}
 .platform-shot img{width:100%;height:auto;display:block}
-@media(max-width:640px){.mascot-float{width:74px;left:-8px;bottom:-16px}}
+@media(max-width:640px){.mascot-float{width:66px;left:-10px;top:-26px}}
 
 /* marquee */
 .marquee{padding:34px 0 6px;overflow:hidden}
