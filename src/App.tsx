@@ -18,12 +18,7 @@ function Reveal({ children, className = "" }: { children: ReactNode; className?:
 }
 
 const Mark = () => (
-  <span className="brand-mark">
-    <svg viewBox="0 0 24 24" fill="none">
-      <path d="M6 20l6-13 6 13" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M9 15h6" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" />
-    </svg>
-  </span>
+  <img className="brand-logo" src={asset("logo.webp")} alt="Quayard" />
 );
 const Brand = () => (<a className="brand" href="#top"><Mark />Quayard<sup style={{ fontFamily: "var(--mono)", fontSize: 9, color: "var(--accent)", verticalAlign: "super", marginLeft: -2 }}>.ai</sup></a>);
 

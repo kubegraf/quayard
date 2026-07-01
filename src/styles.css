@@ -45,8 +45,7 @@ section.block{padding:112px 0;position:relative}
 header{position:sticky;top:0;z-index:50;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);background:rgba(255,255,255,.78);border-bottom:1px solid var(--line2)}
 .nav{display:flex;align-items:center;justify-content:space-between;height:72px}
 .brand{display:flex;align-items:center;gap:11px;font-family:var(--display);font-weight:700;font-size:20px;letter-spacing:-.01em}
-.brand-mark{width:31px;height:31px;border-radius:9px;background:var(--grad);display:grid;place-items:center;box-shadow:0 8px 18px -6px rgba(124,92,255,.55)}
-.brand-mark svg{width:18px;height:18px}
+.brand-logo{height:32px;width:auto;display:block}
 .nav-links{display:flex;gap:32px;align-items:center}
 .nav-links a{font-size:14.5px;color:var(--muted);transition:color .18s}
 .nav-links a:hover{color:var(--ink)}
