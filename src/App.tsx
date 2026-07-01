@@ -74,6 +74,10 @@ function Hero() {
               <img src={asset("hero-topology.webp")} alt="Live infrastructure topology — all systems nominal, 99.98% 30-day uptime" loading="eager" />
             </div>
             <img className="mascot-float" src={asset("mascot.webp")} alt="Quayard — your AI SRE" />
+            <div className="hero-chip">
+              <span className="hc-ic">⚡</span>
+              <div><div className="hc-n grad">47s</div><div className="hc-l">avg root cause</div></div>
+            </div>
           </div>
         </Reveal>
       </div>
