@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { motion, useInView, animate, type Variants } from "framer-motion";
+import { ScrollExpansionHero } from "@/components/scroll-expansion-hero";
+import { AnimatedTestimonials, type Testimonial } from "@/components/ui/animated-testimonials";
+import { UniqueTestimonial } from "@/components/ui/unique-testimonial";
 
 const asset = (f: string) => `${import.meta.env.BASE_URL}${f}`;
 const EASE = [0.16, 1, 0.3, 1] as const;
@@ -64,38 +67,26 @@ function Nav() {
 
 function Hero() {
   return (
-    <section className="hero" id="top">
-      <div className="wrap hero-grid">
-        <motion.div variants={container} initial="hidden" animate="show">
-          <motion.span className="eyebrow" variants={item}><span className="dot" />Autonomous SRE · Zero Overhead</motion.span>
-          <motion.h1 variants={item}>Your AI SRE<br /><span className="grad">never sleeps.</span></motion.h1>
-          <motion.p className="lede" variants={item}>
-            Quayard detects, investigates, and resolves production incidents autonomously —
-            <b> before your engineers wake up.</b> Ship faster. Sleep better.
-          </motion.p>
-          <motion.div className="hero-cta" variants={item}>
+    <>
+      <ScrollExpansionHero
+        media={asset("hero-topology.webp")}
+        mediaAlt="Live infrastructure topology — all systems nominal, 99.98% 30-day uptime"
+        eyebrow={
+          <>
+            <img className="se-mascot" src={asset("mascot.webp")} alt="Quayard mascot" />
+            <span className="eyebrow"><span className="dot" />Autonomous SRE · Zero Overhead</span>
+          </>
+        }
+        title={<>Your AI SRE <span className="grad">never sleeps.</span></>}
+        subtitle={<>Quayard detects, investigates, and resolves production incidents autonomously — <b style={{ color: "var(--ink)", fontWeight: 600 }}>before your engineers wake up.</b></>}
+        actions={
+          <>
             <a className="btn btn-primary" href="#cta">Book a Demo →</a>
             <a className="btn btn-ghost" href="#how">See How It Works</a>
-          </motion.div>
-          <motion.div className="trust-pills" variants={item}>
-            <span><span className="tick">✓</span> 5-minute deploy</span>
-            <span><span className="tick">✓</span> SOC 2 Compliant</span>
-            <span><span className="tick">✓</span> 99.99% Uptime</span>
-          </motion.div>
-        </motion.div>
-
-        <motion.div className="hero-figure" initial={{ opacity: 0, scale: 0.95, y: 24 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.9, delay: 0.15, ease: EASE }}>
-          <div className="hero-shot">
-            <img src={asset("hero-topology.webp")} alt="Live infrastructure topology — all systems nominal, 99.98% 30-day uptime" loading="eager" />
-          </div>
-          <motion.img className="mascot-float" src={asset("mascot.webp")} alt="Quayard — your AI SRE"
-            animate={{ y: [0, -9, 0] }} transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }} />
-          <motion.div className="hero-chip" animate={{ y: [0, -7, 0] }} transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut" }}>
-            <span className="hc-ic">⚡</span>
-            <div><div className="hc-n grad"><CountUp value="47s" /></div><div className="hc-l">avg root cause</div></div>
-          </motion.div>
-        </motion.div>
-      </div>
+          </>
+        }
+        overlay={<div className="se-cap-title grad">See it run in production.</div>}
+      />
 
       <div className="marquee">
         <div className="lbl">Trusted by world-class engineering teams</div>
@@ -106,7 +97,7 @@ function Hero() {
           </div>
         </div>
       </div>
-    </section>
+    </>
   );
 }
 
@@ -221,24 +212,29 @@ function Results() {
   );
 }
 
+const TESTIMONIALS: Testimonial[] = [
+  { quote: "Quayard resolved a cascading database failure at 2AM while our entire on-call team slept. By morning, we had a full post-mortem and a PR preventing recurrence. That's not a tool — that's a teammate.", name: "Sarah Chen", designation: "VP of Engineering · Series C Fintech", initials: "SC" },
+  { quote: "We went from 200+ pages a week to under 10. MTTR dropped from 45 minutes to under 3. Our SRE team finally has time to work on reliability instead of fighting fires.", name: "Marcus Rivera", designation: "Head of Platform · Enterprise SaaS", initials: "MR" },
+  { quote: "The reasoning engine is genuinely impressive. It traced a latency spike back to a feature flag change three deployments ago. No human would have found that correlation in under an hour.", name: "Dr. Anika Patel", designation: "CTO · Healthcare Platform", initials: "AP" },
+];
+
 function Testimonials() {
-  const q = [
-    { t: "Quayard resolved a cascading database failure at 2AM while our entire on-call team slept. By morning, we had a full post-mortem and a PR preventing recurrence. That's not a tool — that's a teammate.", nm: "Sarah Chen", rl: "VP of Engineering · Series C Fintech", av: "S" },
-    { t: "We went from 200+ pages a week to under 10. MTTR dropped from 45 minutes to under 3. Our SRE team finally has time to work on reliability instead of fighting fires.", nm: "Marcus Rivera", rl: "Head of Platform · Enterprise SaaS", av: "M" },
-    { t: "The reasoning engine is genuinely impressive. It traced a latency spike back to a feature flag change three deployments ago. No human would have found that correlation in under an hour.", nm: "Dr. Anika Patel", rl: "CTO · Healthcare Platform", av: "A" },
-  ];
   return (
     <section className="block">
       <div className="wrap">
         <Reveal><div className="kicker">From Engineering Leaders</div></Reveal>
         <Reveal delay={0.05}><h2>What teams <span className="grad">are saying.</span></h2></Reveal>
-        <div className="quotes">
-          {q.map((it, i) => (
-            <Reveal key={it.nm} delay={i * 0.08}>
-              <div className="quote"><p>“{it.t}”</p><div className="who"><span className="av">{it.av}</span><div><div className="nm">{it.nm}</div><div className="rl">{it.rl}</div></div></div></div>
-            </Reveal>
-          ))}
+        <Reveal delay={0.1}><p className="sub">Root cause in minutes, not war rooms — from the people who ship on Quayard.</p></Reveal>
+
+        <div style={{ marginBottom: 40 }}>
+          <UniqueTestimonial
+            quote="Quayard resolved a cascading database failure at 2AM while our entire on-call team slept. By morning, we had a full post-mortem and a PR preventing recurrence."
+            name="Sarah Chen" role="VP of Engineering · Series C Fintech" initials="SC"
+            metric={{ value: "2AM", label: "resolved while asleep" }}
+          />
         </div>
+
+        <AnimatedTestimonials testimonials={TESTIMONIALS} />
       </div>
     </section>
   );

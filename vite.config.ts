@@ -1,10 +1,11 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import { fileURLToPath, URL } from "node:url";
 
-// base: './' → relative asset paths, so the built site works whether it's
-// served from a domain root (Vercel/Netlify/custom domain) or a GitHub Pages
-// project subpath (kubegraf.github.io/quayard/).
 export default defineConfig({
   base: "./",
   plugins: [react()],
+  resolve: {
+    alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },
+  },
 });

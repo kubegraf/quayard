@@ -1,3 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* shadcn theme tokens (for 21st.dev / shadcn components), namespaced --sh-* */
+:root{
+  --sh-background:0 0% 100%; --sh-foreground:240 32% 9%;
+  --sh-card:0 0% 100%; --sh-card-foreground:240 32% 9%;
+  --sh-popover:0 0% 100%; --sh-popover-foreground:240 32% 9%;
+  --sh-primary:258 90% 68%; --sh-primary-foreground:0 0% 100%;
+  --sh-secondary:255 40% 96%; --sh-secondary-foreground:240 32% 12%;
+  --sh-muted:250 24% 96%; --sh-muted-foreground:240 10% 42%;
+  --sh-accent:258 90% 68%; --sh-accent-foreground:0 0% 100%;
+  --sh-destructive:0 84% 60%; --sh-destructive-foreground:0 0% 100%;
+  --sh-border:250 24% 90%; --sh-input:250 24% 90%; --sh-ring:258 90% 68%;
+  --radius:0.9rem;
+}
+
 :root{
   --bg:#fbfaff; --bg-soft:#f4f1fe; --panel:#f3f0fd; --card:#ffffff;
   --ink:#0d0a1f; --muted:#5b5670; --faint:#928da6;
@@ -97,6 +115,20 @@ h1{font-family:var(--display);font-weight:700;font-size:clamp(46px,6.6vw,80px);l
 .hero-chip .hc-n{font-family:var(--display);font-weight:700;font-size:20px;line-height:1}
 .hero-chip .hc-l{font-size:11px;color:var(--muted);font-family:var(--mono);letter-spacing:.04em;margin-top:2px}
 @media(prefers-reduced-motion:reduce){.mascot-float,.hero-chip{animation:none}}
+
+/* scroll-expansion hero */
+.se-hero{position:relative;height:190vh}
+.se-sticky{position:sticky;top:0;height:100vh;overflow:hidden}
+.se-intro{position:absolute;top:11vh;left:50%;width:min(880px,92vw);z-index:10;text-align:center}
+.se-intro h1{margin:20px 0 18px}
+.se-intro .lede{color:var(--muted);font-size:19px;max-width:560px;margin:0 auto 28px}
+.se-intro .hero-cta{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.se-mascot{width:78px;height:auto;display:block;margin:0 auto 14px;filter:drop-shadow(0 14px 24px rgba(60,30,140,.28));animation:bob 4.5s ease-in-out infinite}
+.se-media{position:absolute;overflow:hidden;box-shadow:var(--sh-lg);border:1px solid var(--glass-brd);z-index:5;background:#fff}
+.se-media img{width:100%;height:100%;object-fit:cover;object-position:center 42%}
+.se-caption{position:absolute;left:0;right:0;bottom:12%;z-index:6;text-align:center;padding:0 24px;color:var(--ink)}
+.se-caption .se-cap-title{font-family:var(--display);font-weight:700;font-size:clamp(26px,3.4vw,40px);letter-spacing:-.02em;margin-bottom:16px}
+@media (prefers-reduced-motion:reduce){.se-hero{height:auto}.se-sticky{position:relative;height:auto;padding:120px 0 40px}.se-intro{position:relative;top:auto;left:auto;transform:none!important;width:auto}.se-media{position:relative!important;width:min(880px,92vw)!important;height:auto!important;top:auto!important;transform:none!important;margin:40px auto 0;border-radius:24px!important}.se-media img{height:auto}.se-caption{display:none}}
 
 /* marquee */
 .marquee{padding:44px 0 8px;overflow:hidden}
