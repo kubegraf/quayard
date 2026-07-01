@@ -75,7 +75,7 @@ function Hero() {
         </div>
         <Reveal>
           <div className="hero-shot">
-            <img src={asset("hero-topology.png")} alt="Live infrastructure topology — all systems nominal, 99.98% 30-day uptime" loading="eager" />
+            <img src={asset("hero-topology.webp")} alt="Live infrastructure topology — all systems nominal, 99.98% 30-day uptime" loading="eager" />
           </div>
         </Reveal>
       </div>
@@ -100,7 +100,7 @@ function Autopsy() {
     {
       num: "01", eta: "Anomaly identified in 0.3s", label: "Detection", title: "See it the instant it drifts.",
       desc: "Quayard monitors every metric, log, and trace across your entire stack. When something deviates from the baseline, it catches it instantly — before alerts even fire.",
-      img: asset("layers.png"), imgAlt: "Detection phase — topology-aware signal correlation",
+      img: asset("layers.webp"), imgAlt: "Detection phase — topology-aware signal correlation",
       barTitle: "detection · checkout-api",
       logs: [
         { ts: "08:42:03", msg: "↑ Latency spike detected: p99 > 1200ms", cls: "up" },
@@ -111,7 +111,7 @@ function Autopsy() {
     {
       num: "02", eta: "Root cause isolated in 47s", label: "Reasoning", title: "Find the source, not the symptom.",
       desc: "The AI assembles a causal chain by correlating deployments, config changes, and infrastructure events. It doesn't just find symptoms — it finds the source.",
-      img: asset("anomaly-pulse.png"), imgAlt: "Reasoning phase — anomaly waveform and causal correlation",
+      img: asset("anomaly-pulse.webp"), imgAlt: "Reasoning phase — anomaly waveform and causal correlation",
       barTitle: "reasoning · causal-chain",
       logs: [
         { ts: "08:42:04", msg: "⚡ Hypothesis: deploy 7e2a91c @ 08:38", cls: "flag" },
