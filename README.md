@@ -1,36 +1,37 @@
 # Quayard.ai
 
-**The autonomous AI SRE platform.** Quayard detects anomalies, finds root cause with
-cited evidence, and safely remediates production incidents — collapsing MTTR from
-hours to seconds, with a human in command the whole way.
+**The autonomous AI SRE platform** — detects anomalies, finds root cause with
+**cited evidence**, and safely remediates production incidents. Zero-trust,
+self-hosted or cloud.
 
-## Landing page
+Marketing landing page — **Vite + React + TypeScript**.
 
-`index.html` is a self-contained, dependency-free marketing landing page (inline CSS,
-Google Fonts, a touch of vanilla JS for scroll reveals). Open it directly or serve it:
+## Develop
 
 ```bash
-# just open it
-open index.html
-
-# or serve locally
-python3 -m http.server 8000   # → http://localhost:8000
+npm install
+npm run dev        # local dev server (http://localhost:5173)
+npm run build      # production build → dist/
+npm run preview    # preview the production build (http://localhost:5000)
+npm run typecheck  # tsc --noEmit
 ```
 
-### Design
+## Deploy (npm)
 
-- **Type:** Space Grotesk (display) · Inter (body) · JetBrains Mono (labels)
-- **Palette:** near-black surface with an aqua → sky → violet accent gradient
-- **Sections:** hero + live incident-trace card · problem stats · feature grid ·
-  how-it-works · outcomes band · CTA · footer
-- Fully responsive; respects `prefers-reduced-motion`.
+```bash
+npm run deploy     # builds and publishes dist/ to the gh-pages branch
+```
 
-## Deploy
+`npm run deploy` uses [`gh-pages`](https://www.npmjs.com/package/gh-pages). To serve it,
+enable **GitHub Pages** on the `gh-pages` branch (repo must be public or on a
+Pages-enabled plan). `vite.config.ts` sets `base: './'` so the bundle also works from
+a domain root — deploy the same `dist/` to Vercel / Netlify / S3+CloudFront, or point
+the **quayard.ai** domain at it.
 
-Any static host works (GitHub Pages, Vercel, Netlify, S3+CloudFront). For GitHub Pages:
-make the repo public (or use a Pages-enabled plan), then enable Pages on the default
-branch — the site is served from `index.html` at the root.
+## Design
 
----
-
-© Quayard.ai
+Dark theme · aqua→cyan→violet accent · status-color language (green = healthy,
+amber/red = incident). Space Grotesk / Inter / JetBrains Mono. Sections: hero with a
+live evidence-cited RCA panel · logo marquee · problem · Detect/Diagnose/Remediate ·
+how-it-works · feature bento · outcomes · security & trust · comparison · testimonials
+· CTA. Responsive; respects `prefers-reduced-motion`.
