@@ -97,39 +97,47 @@ function Hero() {
 
         <Reveal>
           <div className="rca">
-            <div className="rca-head">
-              <div className="rca-id">INC-2291 <span>· checkout-api · p99 latency</span></div>
-              <span className="chip resolving"><span className="d" />Resolving</span>
-            </div>
-            <div className="rstep">
-              <div className="n">01</div>
-              <div className="t">p99 on <code>checkout-api</code> spiked <code>+412%</code> at 02:14 UTC.</div>
-              <div className="tag">Observed</div>
-            </div>
-            <div className="rstep">
-              <div className="n">02</div>
-              <div className="t">Correlated with deploy <code>v3.7.1</code> shipped 4 min prior.</div>
-              <div className="tag">Observed</div>
-            </div>
-            <div className="rstep">
-              <div className="n">03</div>
-              <div className="t">DB pool exhausted — <code>247/250</code> held by stalled workers.</div>
-              <div className="tag warn">Confirmed</div>
-            </div>
-            <div className="rstep">
-              <div className="n">04</div>
-              <div className="t">
-                Root cause: PR <code>#4820</code> dropped the connection timeout. <b>94% confidence.</b>
-                <div className="evidence">
-                  <a href="#cta">logs·2.1k</a><a href="#cta">trace·a91f</a><a href="#cta">metric·pool</a><a href="#cta">diff·#4820</a>
+            <div className="rca-win">
+              <div className="rca-bar">
+                <span className="dotb r" /><span className="dotb y" /><span className="dotb g" />
+                <span className="ttl">quayard — live incident</span>
+              </div>
+              <div className="rca-body">
+                <div className="rca-head">
+                  <div className="rca-id">INC-2291 <span>· checkout-api · p99 latency</span></div>
+                  <span className="chip resolving"><span className="d" />Resolving</span>
+                </div>
+                <div className="rstep">
+                  <div className="n">01</div>
+                  <div className="t">p99 on <code>checkout-api</code> spiked <code>+412%</code> at 02:14 UTC.</div>
+                  <div className="tag">Observed</div>
+                </div>
+                <div className="rstep">
+                  <div className="n">02</div>
+                  <div className="t">Correlated with deploy <code>v3.7.1</code> shipped 4 min prior.</div>
+                  <div className="tag">Observed</div>
+                </div>
+                <div className="rstep">
+                  <div className="n">03</div>
+                  <div className="t">DB pool exhausted — <code>247/250</code> held by stalled workers.</div>
+                  <div className="tag warn">Confirmed</div>
+                </div>
+                <div className="rstep">
+                  <div className="n">04</div>
+                  <div className="t">
+                    Root cause: PR <code>#4820</code> dropped the connection timeout. <b>94% confidence.</b>
+                    <div className="evidence">
+                      <a href="#cta">logs·2.1k</a><a href="#cta">trace·a91f</a><a href="#cta">metric·pool</a><a href="#cta">diff·#4820</a>
+                    </div>
+                  </div>
+                  <div className="tag cite">Cited</div>
+                </div>
+                <div className="rstep">
+                  <div className="n">05</div>
+                  <div className="t">Rolled back &amp; drained stale workers — SLO restored in <code>38s</code>.</div>
+                  <div className="tag ok">Remediated</div>
                 </div>
               </div>
-              <div className="tag cite">Cited</div>
-            </div>
-            <div className="rstep">
-              <div className="n">05</div>
-              <div className="t">Rolled back &amp; drained stale workers — SLO restored in <code>38s</code>.</div>
-              <div className="tag ok">Remediated</div>
             </div>
           </div>
         </Reveal>
@@ -182,9 +190,40 @@ function Problem() {
 
 function Pillars() {
   const items = [
-    { k: "detect", step: "Step 01 · Detect", h: "Catches what thresholds miss.", p: "One model correlates pod restarts, latency, cost and deploy signals — not fourteen disconnected alerts.", icon: <path d="M3 12h4l3 8 4-16 3 8h4" /> },
-    { k: "diagnose", step: "Step 02 · Diagnose", h: "Root cause you can verify.", p: "Every conclusion links the exact logs, metrics, traces and diffs it used. Replay the reasoning — no black box.", icon: <><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></> },
-    { k: "remediate", step: "Step 03 · Remediate", h: "Fixes, gated by you.", p: "Proposes the fix, shows the blast radius, executes after approval — with automatic rollback if the SLO slips.", icon: <><path d="M12 3l7 4v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V7z" /><path d="m9 12 2 2 4-4" /></> },
+    {
+      k: "detect", step: "Step 01 · Detect", h: "Catches what thresholds miss.",
+      p: "One model correlates pod restarts, latency, cost and deploy signals — not fourteen disconnected alerts.",
+      icon: <path d="M3 12h4l3 8 4-16 3 8h4" />,
+      viz: (
+        <div className="pviz">
+          <svg className="spark" viewBox="0 0 240 40" preserveAspectRatio="none">
+            <polyline points="0,30 24,28 48,31 72,27 96,29 120,26 132,8 144,29 168,30 192,28 216,31 240,29"
+              fill="none" stroke="#e08a00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <circle cx="132" cy="8" r="3.5" fill="#e08a00" />
+          </svg>
+        </div>
+      ),
+    },
+    {
+      k: "diagnose", step: "Step 02 · Diagnose", h: "Root cause you can verify.",
+      p: "Every conclusion links the exact logs, metrics, traces and diffs it used. Replay the reasoning — no black box.",
+      icon: <><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></>,
+      viz: (
+        <div className="pviz">
+          <div className="chips"><b>logs·2.1k</b><b>trace·a91f</b><b>metric·pool</b><b>diff·#4820</b></div>
+        </div>
+      ),
+    },
+    {
+      k: "remediate", step: "Step 03 · Remediate", h: "Fixes, gated by you.",
+      p: "Proposes the fix, shows the blast radius, executes after approval — with automatic rollback if the SLO slips.",
+      icon: <><path d="M12 3l7 4v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V7z" /><path d="m9 12 2 2 4-4" /></>,
+      viz: (
+        <div className="pviz">
+          <div className="slo"><span>SLO</span><span className="track"><span className="fill" /></span><span>restored · 38s</span></div>
+        </div>
+      ),
+    },
   ];
   return (
     <section className="block" id="features" style={{ paddingTop: 0 }}>
@@ -200,6 +239,7 @@ function Pillars() {
                 <div className="step-lbl">{it.step}</div>
                 <h3>{it.h}</h3>
                 <p>{it.p}</p>
+                {it.viz}
               </div>
             </Reveal>
           ))}
@@ -246,11 +286,11 @@ function Bento() {
         <h2>Everything an on-call engineer <span className="grad">wishes they had.</span></h2>
         <p className="sub">Depth where it matters — evidence, safety, and your data staying yours.</p>
         <div className="bento">
-          <Reveal className="tile wide"><div className="tile" style={{ height: "100%" }}><span className="glow" /><div className="tag">Evidence-cited RCA</div><h3>No black box. Ever.</h3><p>Every root-cause claim carries its receipts — the log lines, traces, metrics and code diffs behind it. You can agree, disagree, and audit. That's the whole point.</p></div></Reveal>
-          <Reveal className="tile third"><div className="tile" style={{ height: "100%" }}><span className="glow" /><div className="tag">Anomaly detection</div><h3>Learns normal.</h3><p>Flags the drift before it pages you.</p></div></Reveal>
-          <Reveal className="tile third"><div className="tile" style={{ height: "100%" }}><span className="glow" /><div className="tag">Safe remediation</div><h3>Approval-gated.</h3><p>Blast-radius limits + auto-rollback.</p></div></Reveal>
-          <Reveal className="tile half"><div className="tile" style={{ height: "100%" }}><span className="glow" /><div className="tag">Zero-trust</div><h3>Your data stays yours.</h3><p>Self-hosted in your VPC or fully managed. Least-privilege access, zero inbound ports, every action audit-logged.</p></div></Reveal>
-          <Reveal className="tile half"><div className="tile" style={{ height: "100%" }}><span className="glow" /><div className="tag">Integrations</div><h3>Plugs into your stack.</h3><p>Kubernetes, Prometheus, Datadog, GitHub, PagerDuty, Slack — connected in minutes, not weeks.</p></div></Reveal>
+          <Reveal className="b-wide"><div className="tile feature"><div className="tag">Evidence-cited RCA</div><h3>No black box. Ever.</h3><p>Every root-cause claim carries its receipts — the log lines, traces, metrics and code diffs behind it. You can agree, disagree, and audit. That's the whole point.</p><div className="bars"><i style={{ height: "40%" }} /><i style={{ height: "62%" }} /><i style={{ height: "48%" }} /><i style={{ height: "80%" }} /><i style={{ height: "58%" }} /><i style={{ height: "94%" }} /><i style={{ height: "70%" }} /><i style={{ height: "86%" }} /></div></div></Reveal>
+          <Reveal className="b-third"><div className="tile"><div className="tag">Anomaly detection</div><h3>Learns normal.</h3><p>Flags the drift before it pages you.</p></div></Reveal>
+          <Reveal className="b-third"><div className="tile"><div className="tag">Safe remediation</div><h3>Approval-gated.</h3><p>Blast-radius limits + auto-rollback.</p></div></Reveal>
+          <Reveal className="b-half"><div className="tile"><div className="tag">Zero-trust</div><h3>Your data stays yours.</h3><p>Self-hosted in your VPC or fully managed. Least-privilege access, zero inbound ports, every action audit-logged.</p></div></Reveal>
+          <Reveal className="b-half"><div className="tile"><div className="tag">Integrations</div><h3>Plugs into your stack.</h3><p>Kubernetes, Prometheus, Datadog, GitHub, PagerDuty, Slack — connected in minutes, not weeks.</p></div></Reveal>
         </div>
       </div>
     </section>
@@ -273,7 +313,7 @@ function Metrics() {
             <h2 style={{ marginBottom: 6 }}>Measurable from day one.</h2>
             <div className="row">
               {row.map((r) => (
-                <div key={r.l}><div className="n grad">{r.n}</div><div className="l">{r.l}</div></div>
+                <div key={r.l}><div className="n">{r.n}</div><div className="l">{r.l}</div></div>
               ))}
             </div>
           </div>
