@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Quayard — The autonomous AI SRE platform</title>
+<meta name="description" content="Quayard is an AI SRE platform that detects anomalies, finds root cause with cited evidence, and safely remediates production incidents — collapsing MTTR from hours to seconds." />
+<meta property="og:title" content="Quayard — The autonomous AI SRE platform" />
+<meta property="og:description" content="Detect. Diagnose. Safely remediate. The AI SRE that keeps your systems up." />
+<meta property="og:type" content="website" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%232ee6c6'/%3E%3Cstop offset='1' stop-color='%237c6bff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='4' y='4' width='24' height='24' rx='7' fill='url(%23g)'/%3E%3Cpath d='M11 20l4-9 4 9' stroke='%230a0b0f' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0b0f; --bg2:#0c0e15; --panel:#12141d; --card:#14172130;
+    --text:#e9ebf2; --muted:#9aa2b1; --faint:#626a7a;
+    --line:rgba(255,255,255,.09); --line2:rgba(255,255,255,.06);
+    --a1:#2ee6c6; --a2:#7c6bff; --a3:#5bd0ff;
+    --accent:#2ee6c6;
+    --grad:linear-gradient(115deg,#2ee6c6 0%,#5bd0ff 45%,#7c6bff 100%);
+    --display:"Space Grotesk","Helvetica Neue",Arial,sans-serif;
+    --sans:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --mono:"JetBrains Mono","SF Mono",Menlo,monospace;
+    --maxw:1160px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px}
+  .grad-text{background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .mono{font-family:var(--mono)}
+  .eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);
+    padding:7px 14px;border:1px solid var(--line);border-radius:100px;background:rgba(255,255,255,.02)}
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--a1);box-shadow:0 0 10px var(--a1);animation:pulse 2.4s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+  /* buttons */
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--sans);font-weight:600;font-size:14.5px;padding:12px 22px;border-radius:100px;cursor:pointer;border:1px solid transparent;transition:transform .18s,box-shadow .18s,background .18s,border-color .18s;white-space:nowrap}
+  .btn-primary{background:var(--grad);color:#07110f;box-shadow:0 8px 30px -8px rgba(46,230,198,.5)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 40px -10px rgba(46,230,198,.65)}
+  .btn-ghost{background:rgba(255,255,255,.03);border-color:var(--line);color:var(--text)}
+  .btn-ghost:hover{border-color:rgba(255,255,255,.28);background:rgba(255,255,255,.06)}
+
+  /* ===== NAV ===== */
+  header{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);background:rgba(10,11,15,.72);border-bottom:1px solid var(--line2)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:66px}
+  .brand{display:flex;align-items:center;gap:11px;font-family:var(--display);font-weight:700;font-size:20px;letter-spacing:-.01em}
+  .brand-mark{width:30px;height:30px;border-radius:9px;background:var(--grad);display:grid;place-items:center;box-shadow:0 6px 18px -6px rgba(124,107,255,.6)}
+  .brand-mark svg{width:18px;height:18px}
+  .brand sup{font-family:var(--mono);font-size:9px;color:var(--a1);vertical-align:super;letter-spacing:.05em;margin-left:-2px}
+  .nav-links{display:flex;gap:34px;align-items:center}
+  .nav-links a{font-size:14.5px;color:var(--muted);transition:color .18s}
+  .nav-links a:hover{color:var(--text)}
+  .nav-cta{display:flex;align-items:center;gap:14px}
+  .nav-signin{font-size:14.5px;color:var(--muted)}
+  .nav-signin:hover{color:var(--text)}
+  .burger{display:none;background:none;border:1px solid var(--line);border-radius:9px;width:42px;height:38px;color:var(--text);cursor:pointer;align-items:center;justify-content:center}
+
+  /* ===== HERO ===== */
+  .hero{position:relative;padding:96px 0 80px;overflow:hidden}
+  .hero::before{content:"";position:absolute;top:-260px;left:50%;transform:translateX(-50%);width:1100px;height:760px;pointer-events:none;
+    background:radial-gradient(closest-side,rgba(124,107,255,.22),transparent 70%),radial-gradient(closest-side,rgba(46,230,198,.16),transparent 72%);
+    background-position:30% 40%,72% 30%;background-repeat:no-repeat;filter:blur(6px)}
+  .hero::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+    background-image:linear-gradient(var(--line2) 1px,transparent 1px),linear-gradient(90deg,var(--line2) 1px,transparent 1px);
+    background-size:56px 56px;
+    -webkit-mask-image:radial-gradient(ellipse 80% 55% at 50% 30%,#000 0%,transparent 78%);
+            mask-image:radial-gradient(ellipse 80% 55% at 50% 30%,#000 0%,transparent 78%)}
+  .hero-grid{position:relative;z-index:2;display:grid;grid-template-columns:1.05fr .95fr;gap:54px;align-items:center}
+  h1{font-family:var(--display);font-weight:700;font-size:clamp(38px,5.4vw,62px);line-height:1.03;letter-spacing:-.03em;margin:22px 0 20px}
+  .hero p.lede{font-size:17.5px;color:var(--muted);max-width:520px;margin-bottom:30px}
+  .hero p.lede b{color:var(--text);font-weight:600}
+  .hero-cta{display:flex;gap:14px;flex-wrap:wrap}
+  .hero-note{margin-top:22px;font-family:var(--mono);font-size:12px;letter-spacing:.04em;color:var(--faint)}
+  .hero-note b{color:var(--muted);font-weight:500}
+
+  /* incident trace card */
+  .trace{position:relative;background:linear-gradient(180deg,rgba(20,23,33,.9),rgba(12,14,21,.9));border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 40px 90px -40px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.04);backdrop-filter:blur(6px)}
+  .trace::before{content:"";position:absolute;inset:-1px;border-radius:16px;padding:1px;background:linear-gradient(140deg,rgba(46,230,198,.4),transparent 40%,transparent 60%,rgba(124,107,255,.4));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:.6}
+  .trace-head{display:flex;align-items:center;justify-content:space-between;padding-bottom:14px;border-bottom:1px solid var(--line2);margin-bottom:8px}
+  .trace-id{font-family:var(--mono);font-size:12px;color:var(--text)}
+  .trace-id span{color:var(--faint)}
+  .chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;padding:5px 11px;border-radius:100px;border:1px solid rgba(46,230,198,.4);color:var(--a1);background:rgba(46,230,198,.08)}
+  .chip .d{width:5px;height:5px;border-radius:50%;background:var(--a1);box-shadow:0 0 8px var(--a1)}
+  .step{display:grid;grid-template-columns:26px 1fr auto;gap:12px;align-items:start;padding:11px 0;border-bottom:1px dashed var(--line2)}
+  .step:last-child{border-bottom:none}
+  .step .n{font-family:var(--mono);font-size:11px;color:var(--a3);padding-top:2px}
+  .step .t{font-size:13.5px;color:#d3d7e2;line-height:1.5}
+  .step .t code{font-family:var(--mono);font-size:12px;color:var(--a1);background:rgba(46,230,198,.08);border:1px solid rgba(46,230,198,.2);padding:1px 6px;border-radius:5px}
+  .step .tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);white-space:nowrap;padding-top:3px}
+  .step .tag.ok{color:var(--a1)}
+
+  /* ===== LOGO STRIP ===== */
+  .strip{border-top:1px solid var(--line2);border-bottom:1px solid var(--line2);padding:26px 0;margin-top:60px}
+  .strip-inner{display:flex;align-items:center;justify-content:center;gap:38px;flex-wrap:wrap}
+  .strip-label{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint)}
+  .strip span.tool{font-family:var(--display);font-weight:600;font-size:15px;color:#7b8494;letter-spacing:.01em}
+
+  /* ===== SECTION scaffolding ===== */
+  section.block{padding:104px 0}
+  .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--a1);display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:16px}
+  .kicker::before,.kicker::after{content:"";width:24px;height:1px;background:linear-gradient(90deg,transparent,var(--a1))}
+  .kicker::after{background:linear-gradient(90deg,var(--a1),transparent)}
+  h2{font-family:var(--display);font-weight:700;font-size:clamp(30px,4vw,44px);line-height:1.08;letter-spacing:-.025em;text-align:center;max-width:760px;margin:0 auto 16px}
+  .sub{color:var(--muted);text-align:center;max-width:600px;margin:0 auto 56px;font-size:16px}
+
+  /* problem stats */
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .stat{border:1px solid var(--line);border-radius:14px;padding:30px 26px;background:linear-gradient(180deg,rgba(255,255,255,.02),transparent)}
+  .stat .n{font-family:var(--display);font-weight:700;font-size:44px;letter-spacing:-.02em;line-height:1}
+  .stat .l{color:var(--muted);font-size:14px;margin-top:12px}
+
+  /* features */
+  .features{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .feat{border:1px solid var(--line);border-radius:16px;padding:28px 26px;background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,0));position:relative;overflow:hidden;transition:transform .22s,border-color .22s}
+  .feat:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.2)}
+  .feat::after{content:"";position:absolute;top:-40%;right:-30%;width:60%;height:80%;background:radial-gradient(closest-side,rgba(124,107,255,.14),transparent 70%);opacity:0;transition:opacity .3s}
+  .feat:hover::after{opacity:1}
+  .feat .ic{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;background:rgba(46,230,198,.1);border:1px solid rgba(46,230,198,.25);margin-bottom:18px}
+  .feat .ic svg{width:22px;height:22px;stroke:var(--a1)}
+  .feat.alt .ic{background:rgba(124,107,255,.12);border-color:rgba(124,107,255,.3)}
+  .feat.alt .ic svg{stroke:var(--a2)}
+  .feat h3{font-family:var(--display);font-weight:600;font-size:19px;letter-spacing:-.01em;margin-bottom:9px}
+  .feat p{color:var(--muted);font-size:14.5px}
+
+  /* how it works */
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;position:relative}
+  .hw{border:1px solid var(--line);border-radius:14px;padding:26px 22px;background:linear-gradient(180deg,rgba(255,255,255,.02),transparent)}
+  .hw .num{font-family:var(--mono);font-size:12px;color:var(--a1);border:1px solid rgba(46,230,198,.3);width:34px;height:34px;border-radius:9px;display:grid;place-items:center;margin-bottom:16px;background:rgba(46,230,198,.06)}
+  .hw h4{font-family:var(--display);font-weight:600;font-size:17px;margin-bottom:8px}
+  .hw p{color:var(--muted);font-size:14px}
+
+  /* outcomes band */
+  .band{border:1px solid var(--line);border-radius:20px;padding:52px 44px;background:
+    radial-gradient(120% 140% at 0% 0%,rgba(46,230,198,.12),transparent 45%),
+    radial-gradient(120% 140% at 100% 100%,rgba(124,107,255,.14),transparent 45%),
+    var(--panel);text-align:center;position:relative;overflow:hidden}
+  .band .row{display:grid;grid-template-columns:repeat(4,1fr);gap:26px;margin-top:8px}
+  .band .n{font-family:var(--display);font-weight:700;font-size:40px;letter-spacing:-.02em}
+  .band .l{color:var(--muted);font-size:13.5px;margin-top:8px}
+
+  /* final cta */
+  .final{text-align:center}
+  .final h2{margin-bottom:14px}
+  .final .cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:30px}
+
+  /* footer */
+  footer{border-top:1px solid var(--line2);padding:50px 0 40px;margin-top:40px}
+  .foot{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:30px}
+  .foot-brand{max-width:280px}
+  .foot-brand p{color:var(--muted);font-size:14px;margin-top:14px}
+  .foot-cols{display:flex;gap:60px;flex-wrap:wrap}
+  .foot-col h5{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);margin-bottom:14px}
+  .foot-col a{display:block;color:var(--muted);font-size:14px;margin-bottom:10px;transition:color .18s}
+  .foot-col a:hover{color:var(--text)}
+  .foot-bottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;margin-top:44px;padding-top:22px;border-top:1px solid var(--line2)}
+  .foot-bottom p{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--faint)}
+
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+  .reveal.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.eyebrow .dot{animation:none}}
+
+  /* responsive */
+  @media(max-width:900px){
+    .hero-grid{grid-template-columns:1fr;gap:40px}
+    .trace{max-width:520px}
+    .features,.stats{grid-template-columns:1fr 1fr}
+    .steps{grid-template-columns:1fr 1fr}
+    .band .row{grid-template-columns:1fr 1fr;gap:30px 20px}
+  }
+  @media(max-width:640px){
+    .nav-links,.nav-signin{display:none}
+    .burger{display:flex}
+    .features,.stats,.steps,.band .row{grid-template-columns:1fr}
+    section.block{padding:76px 0}
+    .band{padding:40px 24px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#top">
+      <span class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M6 18l6-13 6 13" stroke="#07110f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 13h6" stroke="#07110f" stroke-width="2.4" stroke-linecap="round"/></svg>
+      </span>
+      Quayard<sup>.ai</sup>
+    </a>
+    <nav class="nav-links">
+      <a href="#platform">Platform</a>
+      <a href="#how">How it works</a>
+      <a href="#features">Features</a>
+      <a href="#outcomes">Outcomes</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="nav-signin" href="#">Sign in</a>
+      <a class="btn btn-primary" href="#cta">Book a demo</a>
+      <button class="burger" aria-label="Menu" onclick="document.querySelector('.nav-links').style.display='flex'">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="eyebrow"><span class="dot"></span>Autonomous AI SRE</span>
+        <h1>Your production,<br><span class="grad-text">on autopilot.</span></h1>
+        <p class="lede">Quayard is an AI SRE platform that <b>detects anomalies, finds root cause with cited evidence, and safely remediates</b> production incidents — collapsing MTTR from hours to seconds.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="#cta">Book a demo →</a>
+          <a class="btn btn-ghost" href="#how">See how it works</a>
+        </div>
+        <div class="hero-note"><b>Zero-trust by design.</b> Self-hosted or cloud · every action signed &amp; auditable.</div>
+      </div>
+
+      <div class="trace reveal">
+        <div class="trace-head">
+          <div class="trace-id">INC-2291 <span>· checkout-api · p99 latency</span></div>
+          <span class="chip"><span class="d"></span>Resolving</span>
+        </div>
+        <div class="step"><div class="n">01</div><div class="t">p99 latency on <code>checkout-api</code> spiked <code>+412%</code> at 02:14 UTC.</div><div class="tag">Observed</div></div>
+        <div class="step"><div class="n">02</div><div class="t">Correlated with deploy <code>v3.7.1</code> shipped 4 min earlier.</div><div class="tag">Observed</div></div>
+        <div class="step"><div class="n">03</div><div class="t">DB pool exhausted — <code>247/250</code> held by stalled workers.</div><div class="tag">Confirmed</div></div>
+        <div class="step"><div class="n">04</div><div class="t">Root cause: PR <code>#4820</code> dropped the connection timeout. <b style="color:#fff">94% confidence.</b></div><div class="tag ok">Cited</div></div>
+        <div class="step"><div class="n">05</div><div class="t">Rolled back &amp; drained stale workers. SLO restored in <code>38s</code>.</div><div class="tag ok">Remediated</div></div>
+      </div>
+    </div>
+
+    <!-- trust strip -->
+    <div class="strip">
+      <div class="wrap strip-inner">
+        <span class="strip-label">Plugs into your stack</span>
+        <span class="tool">Kubernetes</span>
+        <span class="tool">Prometheus</span>
+        <span class="tool">Datadog</span>
+        <span class="tool">GitHub</span>
+        <span class="tool">OpenTelemetry</span>
+        <span class="tool">PagerDuty</span>
+        <span class="tool">Slack</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLEM -->
+  <section class="block" id="platform">
+    <div class="wrap">
+      <div class="kicker">The problem</div>
+      <h2>On-call is broken. <span class="grad-text">Incidents don't wait.</span></h2>
+      <p class="sub">Every team is drowning in alerts while root cause hides across a dozen tools. The cost isn't the outage — it's the hour of a senior engineer at 3am.</p>
+      <div class="stats">
+        <div class="stat reveal"><div class="n grad-text">$14k</div><div class="l">Median cost of a single minute of downtime (Gartner / IDC).</div></div>
+        <div class="stat reveal"><div class="n grad-text">67h</div><div class="l">Median MTTR when a human has to trace root cause by hand.</div></div>
+        <div class="stat reveal"><div class="n grad-text">~85h</div><div class="l">Per engineer, per quarter, lost to triage and post-mortems.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="block" id="features" style="padding-top:0">
+    <div class="wrap">
+      <div class="kicker">The platform</div>
+      <h2>An autonomous SRE, <span class="grad-text">not another dashboard.</span></h2>
+      <p class="sub">Quayard closes the loop — from the first anomaly to a signed, verified fix — with a human in command the whole way.</p>
+      <div class="features">
+        <div class="feat reveal">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg></div>
+          <h3>Detect</h3>
+          <p>One model correlates pod restarts, latency, cost and deploy signals — not fourteen disconnected alerts.</p>
+        </div>
+        <div class="feat alt reveal">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></div>
+          <h3>Diagnose</h3>
+          <p>Evidence-cited root cause. Every conclusion links the log line, trace, metric and commit it used. Replay the reasoning.</p>
+        </div>
+        <div class="feat reveal">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 4v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V7z"/><path d="m9 12 2 2 4-4"/></svg></div>
+          <h3>Remediate</h3>
+          <p>Cryptographically-signed fixes, approval policies, blast-radius limits, and automatic rollback if SLOs don't recover.</p>
+        </div>
+        <div class="feat alt reveal">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div>
+          <h3>Zero-trust</h3>
+          <p>The agent opens zero inbound ports and verifies every command inside your cluster. Deployable air-gapped.</p>
+        </div>
+        <div class="feat reveal">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg></div>
+          <h3>Evidence, always</h3>
+          <p>A signed, audit-ready record for every incident — ready for SOC 2, DORA, and the post-mortem that writes itself.</p>
+        </div>
+        <div class="feat alt reveal">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.4"/><circle cx="18" cy="6" r="2.4"/><circle cx="12" cy="18" r="2.4"/><path d="M6 8.4V11a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V8.4M12 14v1.6"/></svg></div>
+          <h3>In your stack</h3>
+          <p>Kubernetes, Prometheus, Datadog, GitHub, OpenTelemetry, Slack, PagerDuty — connected in minutes, not weeks.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="block" id="how" style="padding-top:0">
+    <div class="wrap">
+      <div class="kicker">How it works</div>
+      <h2>From signal to signed fix, <span class="grad-text">in seconds.</span></h2>
+      <p class="sub">Four steps run continuously — the agent does the 3am investigation so your engineers don't have to.</p>
+      <div class="steps">
+        <div class="hw reveal"><div class="num">1</div><h4>Observe</h4><p>Streams telemetry, deploys and topology into one live model of your systems.</p></div>
+        <div class="hw reveal"><div class="num">2</div><h4>Reason</h4><p>Forms a hypothesis, walks the graph, and gathers evidence like a senior engineer.</p></div>
+        <div class="hw reveal"><div class="num">3</div><h4>Propose</h4><p>Surfaces the root cause with confidence and a fix — staged under your approval policy.</p></div>
+        <div class="hw reveal"><div class="num">4</div><h4>Resolve</h4><p>Applies the signed remediation, verifies recovery, and rolls back if the SLO slips.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OUTCOMES -->
+  <section class="block" id="outcomes" style="padding-top:0">
+    <div class="wrap">
+      <div class="band reveal">
+        <div class="kicker" style="justify-content:center">Outcomes</div>
+        <h2 style="margin-bottom:6px">Measurable from day one.</h2>
+        <div class="row">
+          <div><div class="n grad-text">−90%</div><div class="l">MTTR reduction</div></div>
+          <div><div class="n grad-text">38s</div><div class="l">Median signal → fix</div></div>
+          <div><div class="n grad-text">10–30%</div><div class="l">Cloud cost reclaimed</div></div>
+          <div><div class="n grad-text">~85h</div><div class="l">Engineer hours saved / quarter</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="block final" id="cta" style="padding-top:0">
+    <div class="wrap">
+      <div class="kicker">Get started</div>
+      <h2>Bring the quiet on-call <span class="grad-text">to your cluster.</span></h2>
+      <p class="sub">Self-hosted or cloud. Read-only by default. Walk a real incident with us — the first one's on the house.</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="mailto:founder@quayard.ai?subject=Quayard%20demo">Book a demo →</a>
+        <a class="btn btn-ghost" href="#platform">Explore the platform</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div class="foot-brand">
+        <a class="brand" href="#top">
+          <span class="brand-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M6 18l6-13 6 13" stroke="#07110f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 13h6" stroke="#07110f" stroke-width="2.4" stroke-linecap="round"/></svg></span>
+          Quayard<sup>.ai</sup>
+        </a>
+        <p>The autonomous AI SRE platform. Detect, diagnose, and safely resolve incidents — before they page you.</p>
+      </div>
+      <div class="foot-cols">
+        <div class="foot-col">
+          <h5>Product</h5>
+          <a href="#platform">Platform</a>
+          <a href="#features">Features</a>
+          <a href="#how">How it works</a>
+          <a href="#outcomes">Outcomes</a>
+        </div>
+        <div class="foot-col">
+          <h5>Company</h5>
+          <a href="#">About</a>
+          <a href="#">Blog</a>
+          <a href="mailto:founder@quayard.ai">Contact</a>
+          <a href="#">Careers</a>
+        </div>
+        <div class="foot-col">
+          <h5>Legal</h5>
+          <a href="#">Privacy</a>
+          <a href="#">Security</a>
+          <a href="#">Terms</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <p>© <span id="yr">2026</span> Quayard.ai — all rights reserved.</p>
+      <p>Zero inbound ports · every action signed</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('yr').textContent = new Date().getFullYear();
+  // reveal-on-scroll
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  },{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
