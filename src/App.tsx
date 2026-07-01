@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { motion, useInView, animate, type Variants } from "framer-motion";
-import { ScrollExpansionHero } from "@/components/scroll-expansion-hero";
+import { IncidentMap } from "@/components/incident-map";
 import { AnimatedTestimonials, type Testimonial } from "@/components/ui/animated-testimonials";
 import { UniqueTestimonial } from "@/components/ui/unique-testimonial";
 
@@ -67,26 +67,32 @@ function Nav() {
 
 function Hero() {
   return (
-    <>
-      <ScrollExpansionHero
-        media={asset("hero-topology.webp")}
-        mediaAlt="Live infrastructure topology — all systems nominal, 99.98% 30-day uptime"
-        eyebrow={
-          <>
-            <img className="se-mascot" src={asset("mascot.webp")} alt="Quayard mascot" />
-            <span className="eyebrow"><span className="dot" />Autonomous SRE · Zero Overhead</span>
-          </>
-        }
-        title={<>Your AI SRE <span className="grad">never sleeps.</span></>}
-        subtitle={<>Quayard detects, investigates, and resolves production incidents autonomously — <b style={{ color: "var(--ink)", fontWeight: 600 }}>before your engineers wake up.</b></>}
-        actions={
-          <>
+    <section className="hero" id="top">
+      <div className="wrap hero-grid">
+        <motion.div variants={container} initial="hidden" animate="show">
+          <motion.span className="eyebrow" variants={item}><span className="dot" />Autonomous SRE · Zero Overhead</motion.span>
+          <motion.h1 variants={item}>Your AI SRE<br /><span className="grad">never sleeps.</span></motion.h1>
+          <motion.p className="lede" variants={item}>
+            Quayard detects, investigates, and resolves production incidents autonomously —
+            <b> before your engineers wake up.</b> Ship faster. Sleep better.
+          </motion.p>
+          <motion.div className="hero-cta" variants={item}>
             <a className="btn btn-primary" href="#cta">Book a Demo →</a>
             <a className="btn btn-ghost" href="#how">See How It Works</a>
-          </>
-        }
-        overlay={<div className="se-cap-title grad">See it run in production.</div>}
-      />
+          </motion.div>
+          <motion.div className="trust-pills" variants={item}>
+            <span><span className="tick">✓</span> 5-minute deploy</span>
+            <span><span className="tick">✓</span> SOC 2 Compliant</span>
+            <span><span className="tick">✓</span> 99.99% Uptime</span>
+          </motion.div>
+        </motion.div>
+
+        <motion.div className="hero-figure" initial={{ opacity: 0, scale: 0.96, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.9, delay: 0.15, ease: EASE }}>
+          <IncidentMap />
+          <motion.img className="mascot-float" src={asset("mascot.webp")} alt="Quayard — your AI SRE"
+            animate={{ y: [0, -9, 0] }} transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }} />
+        </motion.div>
+      </div>
 
       <div className="marquee">
         <div className="lbl">Trusted by world-class engineering teams</div>
@@ -97,7 +103,7 @@ function Hero() {
           </div>
         </div>
       </div>
-    </>
+    </section>
   );
 }
 

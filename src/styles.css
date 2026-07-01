@@ -130,6 +130,16 @@ h1{font-family:var(--display);font-weight:700;font-size:clamp(46px,6.6vw,80px);l
 .se-caption .se-cap-title{font-family:var(--display);font-weight:700;font-size:clamp(26px,3.4vw,40px);letter-spacing:-.02em;margin-bottom:16px}
 @media (prefers-reduced-motion:reduce){.se-hero{height:auto}.se-sticky{position:relative;height:auto;padding:120px 0 40px}.se-intro{position:relative;top:auto;left:auto;transform:none!important;width:auto}.se-media{position:relative!important;width:min(880px,92vw)!important;height:auto!important;top:auto!important;transform:none!important;margin:40px auto 0;border-radius:24px!important}.se-media img{height:auto}.se-caption{display:none}}
 
+/* incident detection map (hero visual) */
+.imap{position:relative;width:100%;aspect-ratio:5/4;border-radius:var(--r-lg);overflow:hidden;background:radial-gradient(120% 100% at 52% 42%,#ffffff 0%,#f4efff 62%,#ece5ff 100%);border:1px solid var(--glass-brd);box-shadow:var(--sh-lg)}
+.imap-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(124,92,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(124,92,255,.08) 1px,transparent 1px);background-size:34px 34px;-webkit-mask-image:radial-gradient(72% 72% at 52% 48%,#000,transparent);mask-image:radial-gradient(72% 72% at 52% 48%,#000,transparent)}
+.imap-svg{position:absolute;inset:0;width:100%;height:100%}
+.imap-tag{position:absolute;z-index:2;font-family:var(--mono);font-size:10.5px;color:var(--muted);background:rgba(255,255,255,.82);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:8px;padding:4px 9px;display:inline-flex;align-items:center;gap:6px;box-shadow:var(--sh-sm);white-space:nowrap}
+.imap-tag.alert{color:var(--amber);border-color:rgba(247,144,9,.42)}
+.imap-tag .d{width:5px;height:5px;border-radius:50%;background:var(--amber);box-shadow:0 0 8px var(--amber)}
+.imap-status{position:absolute;left:14px;right:14px;bottom:14px;z-index:2;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);background:rgba(255,255,255,.85);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:10px;padding:9px 12px;display:flex;align-items:center;gap:8px;box-shadow:var(--sh-sm)}
+.imap-status .d{width:7px;height:7px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 4px rgba(247,144,9,.18);flex:0 0 auto}
+
 /* marquee */
 .marquee{padding:44px 0 8px;overflow:hidden}
 .marquee .lbl{text-align:center;font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-bottom:24px}
