@@ -1,27 +1,23 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { motion, useInView, animate, type Variants } from "framer-motion";
-import { IncidentMap } from "@/components/incident-map";
-import { AnimatedTestimonials, type Testimonial } from "@/components/ui/animated-testimonials";
-import { UniqueTestimonial } from "@/components/ui/unique-testimonial";
+import { OpsConsole } from "@/components/ops-console";
 
 const asset = (f: string) => `${import.meta.env.BASE_URL}${f}`;
 const EASE = [0.16, 1, 0.3, 1] as const;
 
-/* scroll reveal */
-const up: Variants = { hidden: { opacity: 0, y: 26 }, show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: EASE } } };
+/* ---------------------------------------------------------------- motion */
 function Reveal({ children, className = "", delay = 0 }: { children: ReactNode; className?: string; delay?: number }) {
   return (
-    <motion.div className={className} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.15 }}
-      variants={{ hidden: { opacity: 0, y: 26 }, show: { opacity: 1, y: 0, transition: { duration: 0.7, delay, ease: EASE } } }}>
+    <motion.div className={className} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.2 }}
+      variants={{ hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0, transition: { duration: 0.65, delay, ease: EASE } } }}>
       {children}
     </motion.div>
   );
 }
-/* stagger container + item */
-const container: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.08, delayChildren: 0.04 } } };
-const item: Variants = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { duration: 0.65, ease: EASE } } };
+const stagger: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.09, delayChildren: 0.05 } } };
+const item: Variants = { hidden: { opacity: 0, y: 18 }, show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE } } };
 
-/* count-up */
+/* --------------------------------------------------------------- count-up */
 function CountUp({ value }: { value: string }) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.6 });
@@ -32,7 +28,7 @@ function CountUp({ value }: { value: string }) {
   const [disp, setDisp] = useState(isNaN(target) ? value : prefix + "0" + suffix);
   useEffect(() => {
     if (!inView || isNaN(target)) return;
-    const c = animate(0, target, { duration: 1.5, ease: EASE, onUpdate: (v) => {
+    const c = animate(0, target, { duration: 1.6, ease: EASE, onUpdate: (v) => {
       const s = decimals > 0 ? v.toFixed(decimals) : Math.round(v).toLocaleString();
       setDisp(prefix + s + suffix);
     } });
@@ -41,65 +37,94 @@ function CountUp({ value }: { value: string }) {
   return <span ref={ref}>{disp}</span>;
 }
 
-const Mark = () => <img className="brand-logo" src={asset("logo.webp")} alt="Quayard" />;
-const Brand = () => (<a className="brand" href="#top"><Mark />Quayard<sup>.ai</sup></a>);
-const Check = () => (<span className="ck"><svg viewBox="0 0 24 24"><path d="m5 13 4 4L19 7" /></svg></span>);
+/* ----------------------------------------------------------------- shared */
+const Brand = () => (
+  <a className="brand" href="#top">
+    <span className="brand-mark"><img src={asset("logo.webp")} alt="" /></span>
+    Quayard<sup>.ai</sup>
+  </a>
+);
 
-function Nav() {
+function SectionHead({ index, kicker, title, sub }: { index: string; kicker: string; title: ReactNode; sub?: string }) {
   return (
-    <header>
-      <motion.div className="nav" initial={{ y: -24, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.7, ease: EASE }}>
+    <div className="shead">
+      <Reveal><div className="kicker"><span className="kix">{index}</span>{kicker}</div></Reveal>
+      <Reveal delay={0.06}><h2>{title}</h2></Reveal>
+      {sub && <Reveal delay={0.12}><p className="sub">{sub}</p></Reveal>}
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------- nav */
+function Nav() {
+  const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const on = () => setScrolled(window.scrollY > 24);
+    on();
+    window.addEventListener("scroll", on, { passive: true });
+    return () => window.removeEventListener("scroll", on);
+  }, []);
+  const links = [["#how", "How it works"], ["#platform", "Platform"], ["#results", "Results"], ["#integrations", "Integrations"]] as const;
+  return (
+    <header className={`nav ${scrolled ? "scrolled" : ""}`}>
+      <div className="nav-in">
         <Brand />
-        <nav className="nav-links">
-          <a href="#platform">Platform</a><a href="#how">How It Works</a><a href="#results">Results</a><a href="#integrations">Integrations</a>
+        <nav className={`nav-links ${open ? "open" : ""}`} onClick={() => setOpen(false)}>
+          {links.map(([href, label]) => <a key={href} href={href}>{label}</a>)}
+          <a className="nav-links-cta" href="#cta">Book a demo</a>
         </nav>
         <div className="nav-cta">
-          <a className="nav-signin" href="#">Sign In</a>
-          <a className="btn btn-primary" href="#cta">Book a Demo</a>
-          <button className="burger" aria-label="Menu" onClick={() => { const el = document.querySelector<HTMLElement>(".nav-links"); if (el) el.style.display = el.style.display === "flex" ? "" : "flex"; }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M3 12h18M3 18h18" /></svg>
+          <a className="nav-signin" href="#">Sign in</a>
+          <a className="btn btn-primary sm" href="#cta">Book a demo</a>
+          <button className="burger" aria-label="Toggle menu" aria-expanded={open} onClick={() => setOpen(!open)}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              {open ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M3 6h18M3 12h18M3 18h18" />}
+            </svg>
           </button>
         </div>
-      </motion.div>
+      </div>
     </header>
   );
 }
 
+/* ------------------------------------------------------------------- hero */
 function Hero() {
   return (
     <section className="hero" id="top">
+      <div className="hero-grid-bg" aria-hidden />
       <div className="wrap hero-grid">
-        <motion.div variants={container} initial="hidden" animate="show">
-          <motion.span className="eyebrow" variants={item}><span className="dot" />Autonomous SRE · Zero Overhead</motion.span>
-          <motion.h1 variants={item}>Your AI SRE<br /><span className="grad">never sleeps.</span></motion.h1>
+        <motion.div className="hero-copy" variants={stagger} initial="hidden" animate="show">
+          <motion.span className="eyebrow" variants={item}><span className="dot" />AUTONOMOUS SRE · ALWAYS ON-CALL</motion.span>
+          <motion.h1 variants={item}>
+            Incidents resolve<br />themselves at <span className="hl">3AM.</span>
+          </motion.h1>
           <motion.p className="lede" variants={item}>
-            Quayard detects, investigates, and resolves production incidents autonomously —
-            <b> before your engineers wake up.</b> Ship faster. Sleep better.
+            Quayard is an AI SRE that detects anomalies, isolates root cause with cited evidence,
+            and ships the fix — <b>while your on-call rotation sleeps.</b>
           </motion.p>
           <motion.div className="hero-cta" variants={item}>
-            <a className="btn btn-primary" href="#cta">Book a Demo →</a>
-            <a className="btn btn-ghost" href="#how">See How It Works</a>
+            <a className="btn btn-primary" href="#cta">Book a demo</a>
+            <a className="btn btn-ghost" href="#how">Watch it work <span className="arr">→</span></a>
           </motion.div>
-          <motion.div className="trust-pills" variants={item}>
-            <span><span className="tick">✓</span> 5-minute deploy</span>
-            <span><span className="tick">✓</span> SOC 2 Compliant</span>
-            <span><span className="tick">✓</span> 99.99% Uptime</span>
+          <motion.div className="trust-row" variants={item}>
+            <span>5-minute deploy</span><i /><span>SOC 2 Type II</span><i /><span>Self-hosted or cloud</span>
           </motion.div>
         </motion.div>
 
-        <motion.div className="hero-figure" initial={{ opacity: 0, scale: 0.96, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.9, delay: 0.15, ease: EASE }}>
-          <IncidentMap />
-          <motion.img className="mascot-float" src={asset("mascot.webp")} alt="Quayard — your AI SRE"
-            animate={{ y: [0, -9, 0] }} transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }} />
+        <motion.div className="hero-figure" initial={{ opacity: 0, y: 26 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, delay: 0.25, ease: EASE }}>
+          <OpsConsole />
+          <div className="hero-figure-glow" aria-hidden />
         </motion.div>
       </div>
 
       <div className="marquee">
-        <div className="lbl">Trusted by world-class engineering teams</div>
+        <div className="marquee-lbl">Works with the stack you already run</div>
         <div className="marquee-mask">
           <div className="marquee-track">
-            {["Datadog","PagerDuty","AWS","Kubernetes","Grafana","Terraform","Docker","Prometheus","Slack","GitHub","Jenkins","Azure","GCP","Splunk","New Relic",
-              "Datadog","PagerDuty","AWS","Kubernetes","Grafana","Terraform","Docker","Prometheus","Slack","GitHub","Jenkins","Azure","GCP","Splunk","New Relic"].map((t, i) => <span key={i}>{t}</span>)}
+            {[...Array(2)].flatMap((_, k) =>
+              ["Datadog", "PagerDuty", "AWS", "Kubernetes", "Grafana", "Terraform", "Prometheus", "Slack", "GitHub", "Azure", "GCP", "Splunk", "New Relic", "Opsgenie"]
+                .map((t) => <span key={`${k}-${t}`}>{t}</span>))}
           </div>
         </div>
       </div>
@@ -107,162 +132,71 @@ function Hero() {
   );
 }
 
-type Step = { num: string; eta: string; label: string; title: string; desc: string; img?: string; imgAlt?: string; barTitle: string; logs: { ts: string; msg: string; cls?: string }[] };
-function Autopsy() {
+/* ----------------------------------------------------------- how it works */
+type Step = {
+  num: string; tag: string; time: string; title: string; desc: string;
+  logs: { ts: string; msg: string; cls?: string }[];
+};
+function HowItWorks() {
   const steps: Step[] = [
-    { num: "01", eta: "Anomaly identified in 0.3s", label: "Detection", title: "See it the instant it drifts.",
-      desc: "Quayard monitors every metric, log, and trace across your entire stack. When something deviates from the baseline, it catches it instantly — before alerts even fire.",
-      img: asset("layers.webp"), imgAlt: "Detection — topology-aware signal correlation", barTitle: "detection · checkout-api",
-      logs: [{ ts: "08:42:03", msg: "↑ Latency spike detected: p99 > 1200ms", cls: "up" }, { ts: "08:42:03", msg: "→ Service: checkout-api / us-east-1" }, { ts: "08:42:04", msg: "→ Blast radius: 3 downstream services" }] },
-    { num: "02", eta: "Root cause isolated in 47s", label: "Reasoning", title: "Find the source, not the symptom.",
-      desc: "The AI assembles a causal chain by correlating deployments, config changes, and infrastructure events. It doesn't just find symptoms — it finds the source.",
-      img: asset("anomaly-pulse.webp"), imgAlt: "Reasoning — anomaly waveform and causal correlation", barTitle: "reasoning · causal-chain",
-      logs: [{ ts: "08:42:04", msg: "⚡ Hypothesis: deploy 7e2a91c @ 08:38", cls: "flag" }, { ts: "08:42:18", msg: "→ Validating: DB query plan regression" }, { ts: "08:42:50", msg: "✓ Root cause: missing index on orders.user_id", cls: "ok" }] },
-    { num: "03", eta: "Auto-remediated in 2m 14s", label: "Resolution", title: "The fix ships itself.",
-      desc: "Quayard generates the fix, opens a PR, and rolls it out — or rolls back the offending deploy. Your engineers review the post-mortem, not the 3AM page.",
-      barTitle: "resolution · auto-remediate",
-      logs: [{ ts: "08:44:17", msg: "⚙ Fix: CREATE INDEX idx_orders_user_id", cls: "flag" }, { ts: "08:44:17", msg: "→ PR #1847 opened → auto-merged" }, { ts: "08:44:17", msg: "✓ p99 latency restored: 142ms", cls: "ok" }] },
+    {
+      num: "01", tag: "DETECT", time: "T+0.3s", title: "It sees the drift before the alert fires.",
+      desc: "Quayard baselines every metric, log stream, and trace in your stack. The moment something deviates, it maps the blast radius across your service topology — no thresholds to tune, no dashboards to babysit.",
+      logs: [
+        { ts: "03:12:04", msg: "↑ p99 latency 1,240ms · checkout-api / us-east-1", cls: "hot" },
+        { ts: "03:12:04", msg: "→ baseline deviation 6.9σ · confidence 0.98" },
+        { ts: "03:12:05", msg: "→ blast radius: payments, cart, orders-db" },
+      ],
+    },
+    {
+      num: "02", tag: "DIAGNOSE", time: "T+47s", title: "It finds the cause, and shows its work.",
+      desc: "The reasoning engine builds a causal chain across deploys, config changes, and infra events — then validates each hypothesis against the evidence. Every conclusion ships with citations you can check.",
+      logs: [
+        { ts: "03:12:31", msg: "⚡ hypothesis: deploy 7e2a91c @ 03:08 UTC", cls: "warn" },
+        { ts: "03:12:44", msg: "→ validating: query-plan diff on orders service" },
+        { ts: "03:12:51", msg: "✓ root cause: missing index on orders.user_id", cls: "ok" },
+      ],
+    },
+    {
+      num: "03", tag: "REMEDIATE", time: "T+2m 41s", title: "The fix ships under your policy.",
+      desc: "Quayard drafts the remediation — a PR, a rollback, a config change — and executes it under the approval policy you set. Fully autonomous, one-click, or read-only: you decide per environment.",
+      logs: [
+        { ts: "03:13:22", msg: "⚙ CREATE INDEX CONCURRENTLY idx_orders_user_id", cls: "warn" },
+        { ts: "03:14:40", msg: "→ PR #1847 · checks green · merged & deployed" },
+        { ts: "03:14:45", msg: "✓ p99 recovered → 142ms · post-mortem drafted", cls: "ok" },
+      ],
+    },
   ];
   return (
-    <section className="block soft" id="how">
+    <section className="block" id="how">
       <div className="wrap">
-        <Reveal><div className="kicker">The Incident Autopsy</div></Reveal>
-        <Reveal delay={0.05}><h2>From alert to resolution<br /><span className="grad">in under 3 minutes.</span></h2></Reveal>
-        <Reveal delay={0.1}><p className="sub">Watch how Quayard autonomously handles a production incident — no human intervention required.</p></Reveal>
-        {steps.map((s, i) => (
-          <Reveal key={s.num}>
-            <div className={`autopsy-step ${i % 2 === 1 ? "flip" : ""}`}>
-              <div className="step-copy">
-                <div className="step-num">{s.num}</div>
-                <div className="step-lbl">{s.label}</div>
-                <div className="step-eta">{s.eta}</div>
-                <h3>{s.title}</h3>
-                <p>{s.desc}</p>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                {s.img && <div className="step-shot"><img src={s.img} alt={s.imgAlt} loading="lazy" /></div>}
+        <SectionHead index="01" kicker="How it works"
+          title={<>One incident, replayed.<br /><span className="hl">Zero humans paged.</span></>}
+          sub="This is a real incident pattern, end to end. Quayard handled every phase before the on-call engineer's phone would have buzzed." />
+        <div className="timeline">
+          {steps.map((s, i) => (
+            <Reveal key={s.num} delay={i * 0.05}>
+              <div className="tstep">
+                <div className="tstep-rail">
+                  <span className="tstep-node">{s.num}</span>
+                  {i < steps.length - 1 && <span className="tstep-line" />}
+                </div>
+                <div className="tstep-body">
+                  <div className="tstep-meta">
+                    <span className={`ttag ${s.tag.toLowerCase()}`}>{s.tag}</span>
+                    <span className="ttime">{s.time}</span>
+                  </div>
+                  <h3>{s.title}</h3>
+                  <p>{s.desc}</p>
+                </div>
                 <div className="logcard">
-                  <div className="lc-bar"><i className="r" /><i className="y" /><i className="g" /><span className="t">{s.barTitle}</span></div>
-                  {s.logs.map((l, j) => <div className="logrow" key={j}><span className="ts">{l.ts}</span><span className={`msg ${l.cls ?? ""}`}>{l.msg}</span></div>)}
+                  <div className="lc-bar"><i /><i /><i /><span>{s.tag.toLowerCase()} · checkout-api</span></div>
+                  {s.logs.map((l, j) => (
+                    <div className="logrow" key={j}><span className="ts">{l.ts}</span><span className={`msg ${l.cls ?? ""}`}>{l.msg}</span></div>
+                  ))}
                 </div>
               </div>
-            </div>
-          </Reveal>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-type Tab = { key: string; h: string; p: string; feats: string[]; legacy: string[]; smart: string[] };
-function Platform() {
-  const tabs: Tab[] = [
-    { key: "Detect", h: "See everything. Miss nothing.", p: "Real-time anomaly detection across logs, metrics, traces, and events. Quayard understands your infrastructure topology and correlates signals across services to catch issues before they cascade.",
-      feats: ["Multi-signal anomaly correlation", "Dynamic baseline learning", "Topology-aware blast radius analysis", "Zero-config auto-discovery"],
-      legacy: ["Manual threshold alerts", "Siloed dashboards", "Alert fatigue (200+ daily)"], smart: ["AI-driven anomaly detection", "Unified signal correlation", "3 actionable alerts per day"] },
-    { key: "Investigate", h: "Reason like your best engineer.", p: "Quayard assembles a causal chain across deploys, config changes and infra events — then validates each hypothesis against the evidence until it lands on the true root cause.",
-      feats: ["Automated causal reasoning", "Deploy & config diffing", "Cross-service trace analysis", "Evidence-cited conclusions"],
-      legacy: ["Manual log spelunking", "Guesswork & tribal knowledge", "Hours to root cause"], smart: ["Automated causal reasoning", "Evidence you can verify", "Root cause in ~47s"] },
-    { key: "Resolve", h: "Fix it before the page.", p: "Quayard generates the remediation, opens a PR or rolls back the offending deploy, and executes under your approval policy — then writes the post-mortem for you.",
-      feats: ["Auto-generated remediations", "PR + safe rollback workflows", "Approval-gated execution", "Automatic post-mortems"],
-      legacy: ["Manual runbooks", "3AM pages", "Post-mortems written by hand"], smart: ["One-click or autonomous fixes", "Rollback in seconds", "Post-mortem generated for you"] },
-  ];
-  const [active, setActive] = useState(0);
-  const t = tabs[active];
-  return (
-    <section className="block" id="platform">
-      <div className="wrap">
-        <Reveal><div className="kicker">The Platform</div></Reveal>
-        <Reveal delay={0.05}><h2>Reliability, <span className="grad">redefined.</span></h2></Reveal>
-        <Reveal delay={0.1}><p className="sub">Three autonomous capabilities that transform how your team handles production.</p></Reveal>
-        <Reveal delay={0.12}><div className="platform-shot"><img src={asset("platform-console.webp")} alt="Quayard developer console" loading="lazy" /></div></Reveal>
-        <Reveal delay={0.05}>
-          <div className="tabs">{tabs.map((tb, i) => <button key={tb.key} className={`tab ${i === active ? "active" : ""}`} onClick={() => setActive(i)}>{tb.key}</button>)}</div>
-        </Reveal>
-        <motion.div className="panel" key={t.key} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: EASE }}>
-          <div>
-            <h3>{t.h}</h3><p>{t.p}</p>
-            <div className="flist">{t.feats.map((f) => <div key={f}><Check />{f}</div>)}</div>
-          </div>
-          <div className="vs">
-            <div className="vs-card legacy"><h4>Legacy Monitoring</h4><ul>{t.legacy.map((l) => <li key={l}>{l}</li>)}</ul></div>
-            <div className="vs-card smart"><h4>Quayard Intelligence</h4><ul>{t.smart.map((l) => <li key={l}>{l}</li>)}</ul></div>
-          </div>
-        </motion.div>
-      </div>
-    </section>
-  );
-}
-
-function Results() {
-  return (
-    <section className="block soft" id="results">
-      <div className="wrap">
-        <Reveal><div className="kicker">Proven Results</div></Reveal>
-        <Reveal delay={0.05}><h2>Quantifiable <span className="grad">impact.</span></h2></Reveal>
-        <div className="results-bento">
-          <Reveal className="rb-hero">
-            <div className="rb-hero-inner">
-              <div className="n grad"><CountUp value="95%" /></div>
-              <div className="rb-hero-l">MTTR reduction</div>
-              <p>Mean time to resolution collapses from 45 minutes to under 3 — the 3AM war room becomes a morning post-mortem.</p>
-              <div className="bars">{[42, 64, 50, 82, 60, 96, 74, 90].map((h, i) => <i key={i} style={{ height: `${h}%` }} />)}</div>
-            </div>
-          </Reveal>
-          <Reveal className="rb"><div><div className="n"><CountUp value="47s" /></div><div className="l">Avg root cause</div><div className="s">Time to identify root cause</div></div></Reveal>
-          <Reveal className="rb"><div><div className="n"><CountUp value="12,000+" /></div><div className="l">Hours saved</div><div className="s">Engineering hours per year</div></div></Reveal>
-          <Reveal className="rb"><div><div className="n"><CountUp value="99.98%" /></div><div className="l">Accuracy</div><div className="s">Root cause analysis accuracy</div></div></Reveal>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-const TESTIMONIALS: Testimonial[] = [
-  { quote: "Quayard resolved a cascading database failure at 2AM while our entire on-call team slept. By morning, we had a full post-mortem and a PR preventing recurrence. That's not a tool — that's a teammate.", name: "Sarah Chen", designation: "VP of Engineering · Series C Fintech", initials: "SC" },
-  { quote: "We went from 200+ pages a week to under 10. MTTR dropped from 45 minutes to under 3. Our SRE team finally has time to work on reliability instead of fighting fires.", name: "Marcus Rivera", designation: "Head of Platform · Enterprise SaaS", initials: "MR" },
-  { quote: "The reasoning engine is genuinely impressive. It traced a latency spike back to a feature flag change three deployments ago. No human would have found that correlation in under an hour.", name: "Dr. Anika Patel", designation: "CTO · Healthcare Platform", initials: "AP" },
-];
-
-function Testimonials() {
-  return (
-    <section className="block">
-      <div className="wrap">
-        <Reveal><div className="kicker">From Engineering Leaders</div></Reveal>
-        <Reveal delay={0.05}><h2>What teams <span className="grad">are saying.</span></h2></Reveal>
-        <Reveal delay={0.1}><p className="sub">Root cause in minutes, not war rooms — from the people who ship on Quayard.</p></Reveal>
-
-        <div style={{ marginBottom: 40 }}>
-          <UniqueTestimonial
-            quote="Quayard resolved a cascading database failure at 2AM while our entire on-call team slept. By morning, we had a full post-mortem and a PR preventing recurrence."
-            name="Sarah Chen" role="VP of Engineering · Series C Fintech" initials="SC"
-            metric={{ value: "2AM", label: "resolved while asleep" }}
-          />
-        </div>
-
-        <AnimatedTestimonials testimonials={TESTIMONIALS} />
-      </div>
-    </section>
-  );
-}
-
-function Integrations() {
-  const cats = [
-    { h: "Observability", items: ["Datadog", "Grafana", "Prometheus", "New Relic", "Splunk", "Dynatrace"] },
-    { h: "Cloud", items: ["AWS", "GCP", "Azure", "DigitalOcean"] },
-    { h: "Orchestration", items: ["Kubernetes", "Docker", "Terraform", "Ansible"] },
-    { h: "Communication", items: ["Slack", "PagerDuty", "Opsgenie", "Teams"] },
-    { h: "Source", items: ["GitHub", "GitLab", "Bitbucket", "Jira"] },
-  ];
-  return (
-    <section className="block soft" id="integrations">
-      <div className="wrap">
-        <Reveal><div className="kicker">Integrations</div></Reveal>
-        <Reveal delay={0.05}><h2>Plugs into your <span className="grad">existing stack.</span></h2></Reveal>
-        <Reveal delay={0.1}><p className="sub">Quayard connects to your observability, cloud, CI/CD, and communication tools out of the box. No agents to install. No data to migrate.</p></Reveal>
-        <div className="int-grid">
-          {cats.map((c, i) => (
-            <Reveal key={c.h} delay={i * 0.06}><div className="int-cat"><h4>{c.h}</h4>{c.items.map((it) => <span key={it}>{it}</span>)}</div></Reveal>
+            </Reveal>
           ))}
         </div>
       </div>
@@ -270,21 +204,225 @@ function Integrations() {
   );
 }
 
-function GetStarted() {
+/* --------------------------------------------------------------- platform */
+function MiniTopology() {
+  return (
+    <svg className="mini-topo" viewBox="0 0 220 120" fill="none" aria-hidden>
+      {[[30, 30], [110, 18], [190, 34], [64, 96], [156, 92]].map(([x, y], i) => (
+        <g key={i}>
+          <line x1={110} y1={58} x2={x} y2={y} className="mt-edge" />
+          <circle cx={x} cy={y} r="5" className="mt-node" />
+        </g>
+      ))}
+      <circle cx="110" cy="58" r="8" className="mt-core" />
+      <circle cx="110" cy="58" r="8" className="mt-ping" />
+    </svg>
+  );
+}
+function MiniDiff() {
+  return (
+    <div className="mini-diff" aria-hidden>
+      <div className="dl del"><span>-</span> retry_budget: unlimited</div>
+      <div className="dl add"><span>+</span> retry_budget: 3 · backoff: exp</div>
+      <div className="dl add"><span>+</span> CREATE INDEX idx_orders_user_id</div>
+      <div className="dl ctx"><span>#</span> PR #1847 · auto-merged 03:14 UTC</div>
+    </div>
+  );
+}
+function MiniChain() {
+  const rows = [
+    ["deploy 7e2a91c", "03:08:12"],
+    ["query plan regressed", "03:11:58"],
+    ["p99 breach · 6.9σ", "03:12:04"],
+    ["root cause · cited", "03:12:51"],
+  ];
+  return (
+    <div className="mini-chain" aria-hidden>
+      {rows.map(([t, ts], i) => (
+        <div className="mc-row" key={i}>
+          <span className="mc-dot" /><span className="mc-t">{t}</span><span className="mc-ts">{ts}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+function Platform() {
+  return (
+    <section className="block soft" id="platform">
+      <div className="wrap">
+        <SectionHead index="02" kicker="The platform"
+          title={<>An SRE&apos;s judgment.<br /><span className="hl">A machine&apos;s vigilance.</span></>}
+          sub="Six capabilities, one autonomous loop — from the first anomalous datapoint to the written post-mortem." />
+        <div className="bento">
+          <Reveal className="bcard wide">
+            <div>
+              <MiniTopology />
+              <h3>Topology-aware detection</h3>
+              <p>Quayard learns your service graph and correlates metrics, logs, and traces across it — so one root anomaly never becomes 200 duplicate alerts.</p>
+            </div>
+          </Reveal>
+          <Reveal className="bcard wide" delay={0.05}>
+            <div>
+              <MiniChain />
+              <h3>Causal reasoning</h3>
+              <p>Hypotheses are tested against deploys, config diffs, and infra events until the chain holds — with evidence cited at every link.</p>
+            </div>
+          </Reveal>
+          <Reveal className="bcard" delay={0.08}>
+            <div>
+              <MiniDiff />
+              <h3>Safe remediation</h3>
+              <p>Fixes ship as reviewable PRs or instant rollbacks, gated by per-environment approval policies you control.</p>
+            </div>
+          </Reveal>
+          <Reveal className="bcard" delay={0.1}>
+            <div>
+              <div className="mini-doc" aria-hidden>
+                <b>POST-MORTEM · INC-4721</b>
+                <i style={{ width: "92%" }} /><i style={{ width: "78%" }} /><i style={{ width: "86%" }} /><i style={{ width: "54%" }} />
+              </div>
+              <h3>Post-mortems, written</h3>
+              <p>Timeline, root cause, impact, and prevention items — drafted by the agent the moment the incident closes.</p>
+            </div>
+          </Reveal>
+          <Reveal className="bcard" delay={0.12}>
+            <div>
+              <div className="mini-policy" aria-hidden>
+                <div className="mp-row"><span>production</span><em className="lvl approve">approval required</em></div>
+                <div className="mp-row"><span>staging</span><em className="lvl auto">fully autonomous</em></div>
+                <div className="mp-row"><span>database migrations</span><em className="lvl review">read-only + suggest</em></div>
+              </div>
+              <h3>Guardrails you define</h3>
+              <p>Zero-trust by design. Scope the agent's permissions per environment and per action class — every step is logged, auditable, and reversible.</p>
+            </div>
+          </Reveal>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------------------------------------------------------------- results */
+function Results() {
+  const stats = [
+    { n: "95%", l: "MTTR reduction", s: "45 minutes → under 3" },
+    { n: "47s", l: "median time to root cause", s: "with cited evidence" },
+    { n: "12,000+", l: "engineering hours saved", s: "per team, per year" },
+    { n: "0", l: "pages at 3AM", s: "your on-call, finally quiet" },
+  ];
+  return (
+    <section className="block" id="results">
+      <div className="wrap">
+        <SectionHead index="03" kicker="Results"
+          title={<>The pager goes quiet.<br /><span className="hl">The graphs go flat.</span></>} />
+        <div className="stats">
+          {stats.map((s, i) => (
+            <Reveal className="stat" key={s.l} delay={i * 0.06}>
+              <div>
+                <div className="stat-n"><CountUp value={s.n} /></div>
+                <div className="stat-l">{s.l}</div>
+                <div className="stat-s">{s.s}</div>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------ testimonials */
+function Testimonials() {
+  const quotes = [
+    {
+      big: true,
+      q: "Quayard resolved a cascading database failure at 2AM while our entire on-call team slept. By morning we had a full post-mortem and a PR preventing recurrence. That's not a tool — that's a teammate.",
+      name: "Sarah Chen", role: "VP of Engineering · Series C fintech", init: "SC",
+    },
+    {
+      q: "We went from 200+ pages a week to under 10. Our SRE team finally works on reliability instead of fighting fires.",
+      name: "Marcus Rivera", role: "Head of Platform · enterprise SaaS", init: "MR",
+    },
+    {
+      q: "It traced a latency spike to a feature flag three deploys back. No human finds that correlation in under an hour.",
+      name: "Dr. Anika Patel", role: "CTO · healthcare platform", init: "AP",
+    },
+  ];
+  return (
+    <section className="block soft" id="teams">
+      <div className="wrap">
+        <SectionHead index="04" kicker="From engineering leaders"
+          title={<>Trusted where <span className="hl">downtime is expensive.</span></>} />
+        <div className="quotes">
+          {quotes.map((t, i) => (
+            <Reveal className={`quote ${t.big ? "big" : ""}`} key={t.name} delay={i * 0.06}>
+              <figure>
+                <div className="quote-mark" aria-hidden>
+                  <svg viewBox="0 0 24 24" width="54" height="54" fill="currentColor">
+                    <path d="M4 12c0-4 2.4-7 6-8l.8 1.8C8.4 7 7.2 8.6 7 10.4c.3-.1.7-.2 1.1-.2 1.9 0 3.3 1.4 3.3 3.4 0 2-1.5 3.4-3.5 3.4C5.5 17 4 15 4 12Zm9.6 0c0-4 2.4-7 6-8l.8 1.8c-2.4 1.2-3.6 2.8-3.8 4.6.3-.1.7-.2 1.1-.2 1.9 0 3.3 1.4 3.3 3.4 0 2-1.5 3.4-3.5 3.4-2.4 0-3.9-2-3.9-5Z" />
+                  </svg>
+                </div>
+                <blockquote>{t.q}</blockquote>
+                <figcaption>
+                  <span className="avatar">{t.init}</span>
+                  <span><b>{t.name}</b><br /><small>{t.role}</small></span>
+                </figcaption>
+              </figure>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------ integrations */
+function Integrations() {
+  const cats = [
+    { h: "Observability", items: ["Datadog", "Grafana", "Prometheus", "New Relic", "Splunk", "Dynatrace"] },
+    { h: "Cloud & infra", items: ["AWS", "GCP", "Azure", "Kubernetes", "Terraform", "Docker"] },
+    { h: "Incident & comms", items: ["PagerDuty", "Opsgenie", "Slack", "Teams"] },
+    { h: "Source & delivery", items: ["GitHub", "GitLab", "Bitbucket", "Jira", "Jenkins"] },
+  ];
+  return (
+    <section className="block" id="integrations">
+      <div className="wrap">
+        <SectionHead index="05" kicker="Integrations"
+          title={<>Plugs into your <span className="hl">existing stack.</span></>}
+          sub="No agents to install, no data to migrate. Connect your observability, cloud, and comms tools — Quayard starts learning in minutes." />
+        <div className="int-grid">
+          {cats.map((c, i) => (
+            <Reveal key={c.h} delay={i * 0.05}>
+              <div className="int-cat">
+                <h4>{c.h}</h4>
+                <div className="int-chips">{c.items.map((it) => <span key={it}>{it}</span>)}</div>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* -------------------------------------------------------------------- CTA */
+function Cta() {
   return (
     <section className="block" id="cta">
       <div className="wrap">
         <Reveal>
           <div className="cta-panel">
-            <div className="kicker">Get Started</div>
-            <h2>Deploy Quayard<br />in 5 minutes.</h2>
-            <p className="sub">No agents to install. No data to migrate. Connect your observability stack and let Quayard start protecting your production systems immediately.</p>
-            <div className="row">
-              <a className="btn btn-primary" href="mailto:founder@quayard.ai?subject=Quayard%20demo">Book a Demo</a>
-              <a className="btn btn-ghost" href="mailto:founder@quayard.ai?subject=Quayard%20trial">Start Free Trial</a>
+            <div className="cta-grid-bg" aria-hidden />
+            <img className="cta-mascot" src={asset("mascot.webp")} alt="" aria-hidden />
+            <div className="kicker center"><span className="kix">06</span>Get started</div>
+            <h2>Put an SRE on-call<br />that <span className="hl">never sleeps.</span></h2>
+            <p className="sub">Connect your stack in five minutes. Quayard starts in read-only mode — see what it would have caught before you grant it a single permission.</p>
+            <div className="cta-row">
+              <a className="btn btn-primary" href="mailto:founder@quayard.ai?subject=Quayard%20demo">Book a demo</a>
+              <a className="btn btn-ghost" href="mailto:founder@quayard.ai?subject=Quayard%20trial">Start free trial</a>
             </div>
-            <div className="fine">
-              <span><span className="tick">✓</span> 5-minute setup</span><span><span className="tick">✓</span> SOC 2 Type II</span><span><span className="tick">✓</span> No credit card required</span>
+            <div className="cta-fine">
+              <span>5-minute setup</span><i /><span>SOC 2 Type II</span><i /><span>No credit card required</span>
             </div>
           </div>
         </Reveal>
@@ -293,19 +431,29 @@ function GetStarted() {
   );
 }
 
+/* ----------------------------------------------------------------- footer */
 function Footer() {
   const cols = [
-    { h: "Platform", links: ["Detection", "Investigation", "Resolution", "Integrations", "Changelog"] },
-    { h: "Resources", links: ["Documentation", "API Reference", "Blog", "Case Studies", "Status"] },
-    { h: "Company", links: ["About", "Careers", "Contact", "Press Kit"] },
-    { h: "Legal", links: ["Privacy Policy", "Terms of Service", "Security", "DPA"] },
+    { h: "Platform", links: ["Detection", "Diagnosis", "Remediation", "Integrations", "Changelog"] },
+    { h: "Resources", links: ["Documentation", "API reference", "Blog", "Case studies", "Status"] },
+    { h: "Company", links: ["About", "Careers", "Contact", "Press kit"] },
+    { h: "Legal", links: ["Privacy", "Terms", "Security", "DPA"] },
   ];
   return (
     <footer>
       <div className="wrap">
         <div className="foot-top">
-          <div className="foot-brand"><Brand /><p>The autonomous AI SRE platform that detects, investigates, and resolves incidents — so your engineers don't have to.</p></div>
-          {cols.map((c) => <div className="foot-col" key={c.h}><h5>{c.h}</h5>{c.links.map((l) => <a href="#" key={l}>{l}</a>)}</div>)}
+          <div className="foot-brand">
+            <Brand />
+            <p>The autonomous AI SRE that detects, diagnoses, and resolves production incidents — and shows its work.</p>
+            <div className="foot-status"><span className="dot" />All systems operational</div>
+          </div>
+          {cols.map((c) => (
+            <div className="foot-col" key={c.h}>
+              <h5>{c.h}</h5>
+              {c.links.map((l) => <a href="#" key={l}>{l}</a>)}
+            </div>
+          ))}
         </div>
         <div className="foot-bottom">
           <p>© {new Date().getFullYear()} Quayard Inc. All rights reserved.</p>
@@ -321,7 +469,13 @@ export default function App() {
     <>
       <Nav />
       <main>
-        <Hero /><Autopsy /><Platform /><Results /><Testimonials /><Integrations /><GetStarted />
+        <Hero />
+        <HowItWorks />
+        <Platform />
+        <Results />
+        <Testimonials />
+        <Integrations />
+        <Cta />
       </main>
       <Footer />
     </>
